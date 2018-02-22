@@ -21,6 +21,7 @@ Configure pipeline options
 
 ## Android
 
+### Static analysis
 [Source](https://github.com/mgasiorowski/mobile-jenkins-shared-library/blob/master/vars/androidStaticAnalysis.groovy)
 
 You must have **staticAnalysisStatusThresholds.properties** file in **config/jenkins** directory.
