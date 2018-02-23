@@ -28,11 +28,7 @@ for [folder level](https://jenkins.io/doc/book/pipeline/shared-libraries/#folder
 To build your projects with this library, you must have Jenkinsfile in you repository, and configure Jenkins to use it 
 (you can have more than one Jenkinsfile).
 
-<hr />
-<h2 align="center">
-✨[Full documentation](https://github.com/mgasiorowski/mobile-jenkins-shared-library/blob/master/docs/README.md)✨
-</h2>
-<hr />
+✨ **[Full documentation](https://github.com/mgasiorowski/mobile-jenkins-shared-library/blob/master/docs/README.md)** ✨
 
 **Example Jenkinsfile**
 ```
