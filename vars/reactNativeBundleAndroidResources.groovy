@@ -3,7 +3,7 @@
 /**
  * Created by Maciej Gasiorowski on 30/08/2017.
  *
- * nodeLabel - label where install dependencies
+ * nodeLabel - label where to bundlere sources
  * bundleAndroidResourcesCommand - command to bundle android resources
  *
  */

@@ -3,7 +3,7 @@
 /**
  * Created by Maciej Gasiorowski on 23/08/2017.
  *
- * Static analysis for android
+ * Static analysis for ios
  *
  * nodeLabel - label where static analysis will be run
  * fastlaneLane - fastlane lane to execute
