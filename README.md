@@ -81,6 +81,8 @@ iosBuild {
 **This will generate pipeline like this**
 ![Jenkins mobile shared library react native](assets/mobile_jenkins_shared_library_react_native.png)
 
+[Full documentation](https://github.com/mgasiorowski/mobile-jenkins-shared-library/blob/master/docs/README.md)
+
 #### More samples
 * [Android](https://github.com/mgasiorowski/sample-android-project-for-mobile-shared-library/blob/master/Jenkinsfile)
 
