@@ -5,8 +5,8 @@ to build Android, iOS and React Native apps.
 
 ## Installation
 
-You can configure in Jenkins it [global](https://jenkins.io/doc/book/pipeline/shared-libraries/#global-shared-libraries),
-or using [CloudBees Folders Plugin](https://wiki.jenkins.io/display/JENKINS/CloudBees+Folders+Plugin) you cant configure
+You can configure in Jenkins [global](https://jenkins.io/doc/book/pipeline/shared-libraries/#global-shared-libraries),
+or using [CloudBees Folders Plugin](https://wiki.jenkins.io/display/JENKINS/CloudBees+Folders+Plugin) you can configure
 for [folder level](https://jenkins.io/doc/book/pipeline/shared-libraries/#folder-level-shared-libraries).
 
 ## Usage
