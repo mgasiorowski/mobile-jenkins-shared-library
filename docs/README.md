@@ -87,7 +87,8 @@ Run android unit tests
 * gradleTasksDebug - gradle tasks to build binary for debug
 * gradleTasksRelease - gradle tasks to build binary for release
 * useWiremock - optional argument to use wiremock (default false)
-* wiremockVersion - optional argument to set wiremock version to use (default is used version on nodes)
+* wiremockVersion - optional argument to set wiremock version to use (default is used version on 
+[nodes](https://github.com/mgasiorowski/mobile-jenkins-shared-library/blob/master/src/io/jenkins/mobilePipeline/Utilities.groovy#L73))
 * wiremockPort - optional argument to set wiremock port to use (default 8080)
 
 ### UI Tests
@@ -101,5 +102,6 @@ Run android UI tests, you must have configured android emulator or connected dev
 * gradleTasksDebug - gradle tasks to build binary for debug
 * gradleTasksRelease - gradle tasks to build binary for release
 * useWiremock - optional argument to use wiremock (default false)
-* wiremockVersion - optional argument to set wiremock version to use (default is used version on nodes)
+* wiremockVersion - optional argument to set wiremock version to use (default is used version on 
+[nodes](https://github.com/mgasiorowski/mobile-jenkins-shared-library/blob/master/src/io/jenkins/mobilePipeline/Utilities.groovy#L73))
 * wiremockPort - optional argument to set wiremock port to use (default 8080)
