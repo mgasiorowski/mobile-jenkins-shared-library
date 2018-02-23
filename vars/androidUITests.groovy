@@ -3,7 +3,7 @@
 /**
  * Created by Maciej Gasiorowski on 17/07/2017.
  *
- * Run android unit tests
+ * Run android UI tests
  *
  * nodeLabel - label where UI tests will be run
  * junitTestReportFile - optional file name with unit tests reports

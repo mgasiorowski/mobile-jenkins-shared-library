@@ -15,16 +15,20 @@ for [folder level](https://jenkins.io/doc/book/pipeline/shared-libraries/#folder
 
 #### Android
 * [gradle wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html)
+* Android SDK
+* Android emulator or connected device
+* set correct path to android sdk in [AndroidUtilities.groovy](https://github.com/mgasiorowski/mobile-jenkins-shared-library/blob/master/src/io/jenkins/mobilePipeline/AndroidUtilities.groovy#L12) ([Issue](https://github.com/mgasiorowski/mobile-jenkins-shared-library/issues/4))
 
 #### iOS
 * [fastlane](https://github.com/fastlane/fastlane)
+* Xcode
 
 ### Jenkinsfile
 
 To build your projects with this library, you must have Jenkinsfile in you repository, and configure Jenkins to use it 
 (you can have more than one Jenkinsfile).
 
-Example Jenkinsfile
+**Example Jenkinsfile**
 ```
 #!groovy
  
@@ -74,7 +78,7 @@ iosBuild {
 
 ```
 
-This will generate pipeline like this
+**This will generate pipeline like this**
 ![Jenkins mobile shared library react native](assets/mobile_jenkins_shared_library_react_native.png)
 
 #### More samples
