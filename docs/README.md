@@ -1,5 +1,46 @@
 # Stages
 
+Table of Contents
+=================
+* [Universal](#universal)
+    * [Checkout scm](#checkout-scm)
+        * [Parameters](#parameters)
+    * [Pipeline options](#pipeline-options)
+        * [Parameters](#parameters-1)
+* [Android](#android)
+    * [Static analysis](#static-analysis)
+        * [Parameters](#parameters-2)
+    * [Unit Tests](#unit-tests)
+        * [Parameters](#parameters-3)
+    * [UI Tests](#ui-tests)
+        * [Parameters](#parameters-4)
+    * [Monkey tests](#monkey-tests)
+        * [Parameters](#parameters-5)
+    * [Build binary](#build-binary)
+        * [Parameters](#parameters-6)
+    * [Beta upload](#beta-upload)
+        * [Parameters](#parameters-7)
+    * [Add trust CA to apk](#add-trust-ca-to-apk)
+        * [Parameters](#parameters-8)
+* [iOS](#ios)
+    * [Static analysis](#static-analysis-1)
+        * [Parameters](#parameters-9)
+    * [Swiftlint](#swiftlint)
+        * [Parameters](#parameters-10)
+    * [Tests](#tests)
+        * [Parameters](#parameters-11)
+    * [Build](#build)
+        * [Parameters](#parameters-12)
+* [React Native](#react-native)
+    * [Install Dependencies](#install-dependencies)
+        * [Parameters](#parameters-13)
+    * [Static analysis](#static-analysis-2)
+        * [Parameters](#parameters-14)
+    * [Unit Tests](#unit-tests-1)
+        * [Parameters](#parameters-15)
+    * [Bundle Android Resources](#bundle-android-resources)
+        * [Parameters](#parameters-16)
+
 ## Universal
 
 ### Checkout scm
