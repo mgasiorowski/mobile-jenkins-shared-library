@@ -43,7 +43,7 @@ def call(body) {
                             try {
                                 sh """#!/bin/zsh
                                  ${iosUtils.addZshrcConfigFileToShell()}
-                                 ${iosUtils.setFastlaneXcodeListTimout()}
+                                 ${iosUtils.setFastlaneXcodeListTimeout()}
                                  ${iosUtils.installProjectEnvironmentRequirements()}
                                  ${iosUtils.runFastlane(env.FASTLANE_PASSWORD, config.fastlaneLane)}
                               """

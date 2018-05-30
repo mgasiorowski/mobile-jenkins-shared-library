@@ -18,12 +18,12 @@ class IosUtilities implements Serializable {
         return "source \$HOME/.zshrc"
     }
 
-    def setFastlaneXcodeListTimout() {
+    def setFastlaneXcodeListTimeout() {
         return "FASTLANE_XCODE_LIST_TIMEOUT=30"
     }
 
     def installProjectEnvironmentRequirements() {
-        return "bundle install --path .vendor/bundle"
+        return "bundle install --path vendor/bundle"
     }
 
     def runFastlane(fastlanePassword, fastlaneLane) {

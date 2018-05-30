@@ -39,7 +39,7 @@ def call(body) {
                         wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'VGA']) {
                             sh """#!/bin/zsh
                                  ${iosUtils.addZshrcConfigFileToShell()}
-                                 ${iosUtils.setFastlaneXcodeListTimout()}
+                                 ${iosUtils.setFastlaneXcodeListTimeout()}
                                  ${iosUtils.installProjectEnvironmentRequirements()}
                                  ${iosUtils.runFastlane(env.FASTLANE_PASSWORD, config.fastlaneLane)}
                               """

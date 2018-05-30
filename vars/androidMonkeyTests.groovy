@@ -70,10 +70,15 @@ def call(body) {
                 def apkFilePath = utils.getFilePath(androidUtils.getApkWildcard(apkName))
                 androidUtils.installApk(apkFilePath)
                 try {
-                    steps.sh """#!/bin/bash -xe
+                    def monkeyRunStdout = steps.sh(script:"""#!/bin/bash -xe
                         \$ANDROID_HOME/platform-tools/adb shell monkey -v -v -s ${seedValue} --throttle ${config.throttleValue} \
                          -p ${config.packageName} --kill-process-after-error --pct-syskeys 0  ${eventCount} 2>&1 | tee monkey.txt
-                     """
+                     """, returnStdout: true).trim()
+                    steps.echo(monkeyRunStdout)
+                    if (monkeyRunStdout.toLowerCase().contains("Monkey aborted due to error".toLowerCase())) {
+                        steps.echo monkeyRunStdout
+                        currentBuild.result = 'UNSTABLE'
+                    }
                 } catch (exception) {
                     utils.handleException(exception)
                 } finally {
