@@ -25,6 +25,9 @@ class Utilities implements Serializable {
 
     def getFilePath(wildcard) {
         def findedFiles = steps.findFiles(glob: wildcard)
+        if (!findedFiles) {
+            steps.error("Can't find file with wildcard: ${wildcard}")
+        }
         return findedFiles[0].path
     }
 

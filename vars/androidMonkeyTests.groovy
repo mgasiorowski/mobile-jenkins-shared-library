@@ -65,9 +65,9 @@ def call(body) {
                 unstash "apkFiles"
                 utils.runWiremock(config.useWiremock, env.WORKSPACE, config.wiremockVersion, config.wiremockPort)
                 def emulatorName = config.emulatorName
+                def apkFilePath = utils.getFilePath(androidUtils.getApkWildcard(apkName))
                 androidUtils.killAllEmulatorsIfRunning()
                 androidUtils.runAndroidEmulator(emulatorName, logcatFileName)
-                def apkFilePath = utils.getFilePath(androidUtils.getApkWildcard(apkName))
                 androidUtils.installApk(apkFilePath)
                 try {
                     def monkeyRunStdout = steps.sh(script:"""#!/bin/bash -xe
