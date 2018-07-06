@@ -112,7 +112,11 @@ class AndroidUtilities implements Serializable {
     }
 
     def setDefaultGradleOptions() {
-        return "--info --full-stacktrace --continue --profile --console=plain"
+        return "--info --full-stacktrace --profile --console=plain"
+    }
+
+    def setDefaultGradleTasks() {
+        return ""
     }
 
     def setAndroidBuildCache(workspace) {
@@ -133,6 +137,21 @@ class AndroidUtilities implements Serializable {
         }
     }
 
+    def stashAndroidBuildCache() {
+        steps.stash name: "androidBuildCache", includes: "**/build/**", useDefaultExcludes: false
+    }
+
+    def ustashAndroidBuildCache() {
+        try {
+            steps.unstash "androidBuildCache"
+        } catch(error) {
+            if(!error.toString().toLowerCase().contains("No such saved stash ‘androidBuildCache’".toLowerCase())) {
+                throw error
+            }
+        }
+    }
+
+
     def archieveGradleProfileReport(gradleProfileFilenameSuffix) {
         def gradleProfileHtmlReportFile = steps.findFiles(glob: "**/reports/profile/**.html")
         def gradleProfileHtmlReportFilename = gradleProfileHtmlReportFile[0].name
@@ -152,3 +171,4 @@ class AndroidUtilities implements Serializable {
         }
     }
 }
+

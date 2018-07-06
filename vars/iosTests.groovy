@@ -30,7 +30,7 @@ def call(body) {
             def utils = new Utilities(steps)
             def reactNativeUtils = new ReactNativeUtilities(steps)
             def junitTestReportFile = iosUtils.getJunitTestReportFile(config.junitTestReportFile)
-            def buildWorkspace = utils.getBuildWorkspace(config.isReactNative, "ios", env.WORKSPACE)
+            def buildWorkspace = utils.getBuildWorkspace(config.isReactNative, "ios", env.WORKSPACE, config.rootBuildScript)
 
             stage("${utils.getStageSuffix(config.stageSuffix)}Tests") {
                 deleteDir()
@@ -38,6 +38,8 @@ def call(body) {
                 reactNativeUtils.unstashNpmCache()
                 utils.runWiremock(config.useWiremock, env.WORKSPACE, config.wiremockVersion, config.wiremockPort)
                 dir(buildWorkspace) {
+                    iosUtils.ustashRubyBuildCache()
+                    iosUtils.ustashIosBuildCache()
                     withCredentials([string(credentialsId: "FASTLANE_PASSWORD", variable: "FASTLANE_PASSWORD"), string(credentialsId: "MATCH_PASSWORD", variable: "MATCH_PASSWORD")]) {
                         wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'VGA']) {
                             try {
@@ -50,6 +52,8 @@ def call(body) {
                             } catch (exception) {
                                 utils.handleException(exception)
                             } finally {
+                                iosUtils.stashIosBuildCache()
+                                iosUtils.stashRubyBuildCache()
                                 junit allowEmptyResults: true, testResults: junitTestReportFile
                                 utils.shutdownWiremock(config.useWiremock, config.wiremockPort)
                             }

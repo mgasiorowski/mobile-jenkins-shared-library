@@ -33,8 +33,9 @@ def call(body) {
             def reactNativeUtils = new ReactNativeUtilities(steps)
             def gradleTasks = androidUtils.getGradleTasks(env.BUILD_TYPE, config.gradleTasksRelease, config.gradleTasksDebug)
             def defaultGradleOptions = androidUtils.setDefaultGradleOptions()
+            def defaultGradleTasks = androidUtils.setDefaultGradleTasks()
             def junitTestReportFile = androidUtils.getJunitTestReportFile(config.junitTestReportFile)
-            def buildWorkspace = utils.getBuildWorkspace(config.isReactNative, "android", env.WORKSPACE)
+            def buildWorkspace = utils.getBuildWorkspace(config.isReactNative, "android", env.WORKSPACE, config.rootBuildScript)
 
             stage("${utils.getStageSuffix(config.stageSuffix)}UI Tests") {
                 deleteDir()
@@ -49,9 +50,10 @@ def call(body) {
                         withEnv(["GRADLE_USER_HOME=${env.WORKSPACE}/.gradle"]) {
                             androidUtils.unstashGradleCache()
                             androidUtils.setAndroidBuildCache(env.WORKSPACE)
+                            androidUtils.ustashAndroidBuildCache()
                             sh "chmod +x gradlew"
                             sh """#!/bin/bash -xe
-                              ./gradlew ${defaultGradleOptions} -PversionCode=${env.BUILD_NUMBER} clean ${gradleTasks}
+                              ./gradlew ${defaultGradleOptions} -PversionCode=${env.BUILD_NUMBER} ${defaultGradleTasks} ${gradleTasks}
                            """
                         }
                     }
@@ -60,6 +62,7 @@ def call(body) {
                 } finally {
                     junit allowEmptyResults: true, testResults: junitTestReportFile
                     androidUtils.stashGradleCache()
+                    androidUtils.stashAndroidBuildCache()
                     androidUtils.killAllEmulatorsIfRunning()
                     archiveArtifacts "**/logcat*.txt"
                     androidUtils.archieveGradleProfileReport("ui-tests")

@@ -32,7 +32,8 @@ def call(body) {
             def reactNativeUtils = new ReactNativeUtilities(steps)
             def gradleTasks = androidUtils.getGradleTasks(env.BUILD_TYPE, config.gradleTasksRelease, config.gradleTasksDebug)
             def defaultGradleOptions = androidUtils.setDefaultGradleOptions()
-            def buildWorkspace = utils.getBuildWorkspace(config.isReactNative, "android", env.WORKSPACE)
+            def defaultGradleTasks = androidUtils.setDefaultGradleTasks()
+            def buildWorkspace = utils.getBuildWorkspace(config.isReactNative, "android", env.WORKSPACE, config.rootBuildScript)
 
             stage("${utils.getStageSuffix(config.stageSuffix)}Beta upload") {
                 deleteDir()
@@ -42,32 +43,34 @@ def call(body) {
                     withEnv(["GRADLE_USER_HOME=${env.WORKSPACE}/.gradle"]) {
                         androidUtils.unstashGradleCache()
                         androidUtils.setAndroidBuildCache(env.WORKSPACE)
+                        androidUtils.ustashAndroidBuildCache()
                         def branch = utils.getBranchName(scm, env.BRANCH_SELECTOR)
                         sh "chmod +x gradlew"
                         if (config.buildSuffixName) {
                             sh """#!/bin/bash -xe
-                              ./gradlew ${defaultGradleOptions} -PversionCode=${env.BUILD_NUMBER} clean ${gradleTasks} \
-                                        -PbuildTypeSuffix='-${config.buildSuffixName}'
+                              ./gradlew ${defaultGradleOptions} -PversionCode=${env.BUILD_NUMBER} ${defaultGradleTasks} \
+                                ${gradleTasks} -PbuildTypeSuffix='-${config.buildSuffixName}'
                            """
                         } else if (branch == "development") {
                             sh """#!/bin/bash -xe
-                              ./gradlew ${defaultGradleOptions} -PversionCode=${env.BUILD_NUMBER} clean ${gradleTasks} \
-                                        -PbuildTypeSuffix='-dev'
+                              ./gradlew ${defaultGradleOptions} -PversionCode=${env.BUILD_NUMBER} ${defaultGradleTasks} \
+                                ${gradleTasks} -PbuildTypeSuffix='-dev'
                            """
                         } else if (config.buildSuffixName == null && branch != "development" && branch != "master") {
                             sh """#!/bin/bash -xe
-                              ./gradlew ${defaultGradleOptions} -PversionCode=${env.BUILD_NUMBER} clean ${gradleTasks} \
-                                        -PbuildTypeSuffix='-${branch}'
+                              ./gradlew ${defaultGradleOptions} -PversionCode=${env.BUILD_NUMBER} ${defaultGradleTasks} \
+                                ${gradleTasks} -PbuildTypeSuffix='-${branch}'
                            """
                         } else {
                             sh """#!/bin/bash -xe
-                              ./gradlew ${defaultGradleOptions} -PversionCode=${env.BUILD_NUMBER} clean ${gradleTasks}
+                              ./gradlew ${defaultGradleOptions} -PversionCode=${env.BUILD_NUMBER} ${defaultGradleTasks} ${gradleTasks}
                            """
                         }
                     }
                 }
 
                 androidUtils.stashGradleCache()
+                androidUtils.stashAndroidBuildCache()
                 androidUtils.archieveGradleProfileReport("beta-upload")
                 archiveArtifacts "**/*.apk"
             }

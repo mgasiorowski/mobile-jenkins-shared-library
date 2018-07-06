@@ -19,7 +19,7 @@ class IosUtilities implements Serializable {
         return "source \$HOME/.zshrc"
     }
 
-    def setFastlaneXcodeListTimeout() {
+    def setFastlaneXcodeListTimout() {
         steps.echo "FASTLANE_XCODE_LIST_TIMEOUT=30"
         return "FASTLANE_XCODE_LIST_TIMEOUT=30"
     }
@@ -41,4 +41,34 @@ class IosUtilities implements Serializable {
             return "**/report.junit"
         }
     }
+
+    def stashIosBuildCache() {
+        steps.stash name: "iosBuildCache", includes: "**/derivedData/**, **/Podfile.lock, **/Pods, **/videostar.xcworkspace/**",
+                excludes: "**/derivedData/**/*-iphonesimulator/**", useDefaultExcludes: false
+    }
+
+    def ustashIosBuildCache() {
+        try {
+            steps.unstash "iosBuildCache"
+        } catch(error) {
+            if(!error.toString().toLowerCase().contains("No such saved stash ‘iosBuildCache’".toLowerCase())) {
+                throw error
+            }
+        }
+    }
+
+    def stashRubyBuildCache() {
+        steps.stash name: "rubyBuildCache", includes: "**/.bundle/**, **/Gemfile.lock, **/vendor/**", useDefaultExcludes: false
+    }
+
+    def ustashRubyBuildCache() {
+        try {
+            steps.unstash "rubyBuildCache"
+        } catch(error) {
+            if(!error.toString().toLowerCase().contains("No such saved stash ‘rubyBuildCache’".toLowerCase())) {
+                throw error
+            }
+        }
+    }
 }
+

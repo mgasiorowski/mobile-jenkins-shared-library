@@ -29,10 +29,11 @@ def call(body) {
     def reactNativeUtils = new ReactNativeUtilities(steps)
     def gradleTasks = androidUtils.getGradleTasks(env.BUILD_TYPE, config.gradleTasksRelease, config.gradleTasksDebug)
     def defaultGradleOptions = androidUtils.setDefaultGradleOptions()
+    def defaultGradleTasks = androidUtils.setDefaultGradleTasks()
 
     timeout(60) {
         node("${config.nodeLabel}") {
-            def buildWorkspace = utils.getBuildWorkspace(config.isReactNative, "android", env.WORKSPACE)
+            def buildWorkspace = utils.getBuildWorkspace(config.isReactNative, "android", env.WORKSPACE, config.rootBuildScript)
 
             stage("${utils.getStageSuffix(config.stageSuffix)}Build binary") {
                 deleteDir()
@@ -42,13 +43,15 @@ def call(body) {
                     withEnv(["GRADLE_USER_HOME=${env.WORKSPACE}/.gradle"]) {
                         androidUtils.unstashGradleCache()
                         androidUtils.setAndroidBuildCache(env.WORKSPACE)
+                        androidUtils.ustashAndroidBuildCache()
                         sh "chmod +x gradlew"
                         sh """#!/bin/bash -xe 
-                          ./gradlew ${defaultGradleOptions} -PversionCode=${env.BUILD_NUMBER} clean ${gradleTasks}
+                          ./gradlew ${defaultGradleOptions} -PversionCode=${env.BUILD_NUMBER} ${defaultGradleTasks} ${gradleTasks}
                        """
                     }
 
                     androidUtils.stashGradleCache()
+                    androidUtils.stashAndroidBuildCache()
                     stash name: "apkFiles", includes: androidUtils.getApkWildcard(config.stashApk)
                     archiveArtifacts "**/*.apk"
                     androidUtils.archieveGradleProfileReport("build")

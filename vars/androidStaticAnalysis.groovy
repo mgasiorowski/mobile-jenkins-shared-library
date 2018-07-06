@@ -34,8 +34,9 @@ def call(body) {
             def reactNativeUtils = new ReactNativeUtilities(steps)
             def gradleTasks = androidUtils.getGradleTasks(env.BUILD_TYPE, config.gradleTasksRelease, config.gradleTasksDebug)
             def defaultGradleOptions = androidUtils.setDefaultGradleOptions()
+            def defaultGradleTasks = androidUtils.setDefaultGradleTasks()
             def statusThresholdsPropertiesFile = staticAnalysis.getstatusThresholdsPropertiesFilePath(config.statusThresholdsPropertiesFile)
-            def buildWorkspace = utils.getBuildWorkspace(config.isReactNative, "android", env.WORKSPACE)
+            def buildWorkspace = utils.getBuildWorkspace(config.isReactNative, "android", env.WORKSPACE, config.rootBuildScript)
 
             stage("${utils.getStageSuffix(config.stageSuffix)}Static analysis") {
                 deleteDir()
@@ -46,8 +47,9 @@ def call(body) {
                     withEnv(["GRADLE_USER_HOME=${env.WORKSPACE}/.gradle"]) {
                         androidUtils.unstashGradleCache()
                         androidUtils.setAndroidBuildCache(env.WORKSPACE)
+                        androidUtils.ustashAndroidBuildCache()
                         sh "chmod +x gradlew"
-                        sh "./gradlew ${defaultGradleOptions} -PversionCode=${env.BUILD_NUMBER} clean ${gradleTasks}"
+                        sh "./gradlew ${defaultGradleOptions} -PversionCode=${env.BUILD_NUMBER} ${defaultGradleTasks} ${gradleTasks}"
                     }
 
                     parallel(
@@ -66,9 +68,9 @@ def call(body) {
                             },
                             "pmd": {
                                 if (config.pmdResultsFile) {
-                                    pmdResultsFile = config.pmdResultsFile
+                                    pmdResultsFile = "**/build/**/${config.pmdResultsFile}"
                                 } else {
-                                    pmdResultsFile = "**/pmd*.xml"
+                                    pmdResultsFile = "**/build/**/pmd*.xml"
                                 }
 
                                 step([$class             : "PmdPublisher", pattern: "${pmdResultsFile}",
@@ -93,6 +95,7 @@ def call(body) {
                     )
 
                     androidUtils.stashGradleCache()
+                    androidUtils.stashAndroidBuildCache()
 
                     if (config.filesToArchieve) {
                         filesToArchieve = config.filesToArchieve

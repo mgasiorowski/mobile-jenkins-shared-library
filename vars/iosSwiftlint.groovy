@@ -26,7 +26,7 @@ def call(body) {
             def iosUtils = new IosUtilities(steps)
             def staticAnalysis = new StaticAnalysisUtilities(steps)
             def reactNativeUtils = new ReactNativeUtilities(steps)
-            def buildWorkspace = utils.getBuildWorkspace(config.isReactNative, "ios", env.WORKSPACE)
+            def buildWorkspace = utils.getBuildWorkspace(config.isReactNative, "ios", env.WORKSPACE, config.rootBuildScript)
             def statusThresholdsPropertiesFile = staticAnalysis.getstatusThresholdsPropertiesFilePath(config.statusThresholdsPropertiesFile)
             def junitTestReportFile = iosUtils.getJunitTestReportFile(config.junitTestReportFile)
 
@@ -35,6 +35,7 @@ def call(body) {
                 unstash "workspace"
                 reactNativeUtils.unstashNpmCache()
                 dir(buildWorkspace) {
+                    iosUtils.ustashRubyBuildCache()
                     withCredentials([string(credentialsId: "FASTLANE_PASSWORD", variable: "FASTLANE_PASSWORD"), string(credentialsId: "MATCH_PASSWORD", variable: "MATCH_PASSWORD")]) {
                         wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'VGA']) {
                             sh """#!/bin/zsh
@@ -44,6 +45,8 @@ def call(body) {
                                  ${iosUtils.runFastlane(env.FASTLANE_PASSWORD, config.fastlaneLane)}
                               """
                         }
+
+                        iosUtils.stashRubyBuildCache()
 
                         step([$class             : "CheckStylePublisher",
                               pattern            : junitTestReportFile,

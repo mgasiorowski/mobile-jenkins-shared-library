@@ -29,7 +29,7 @@ def call(body) {
             def iosUtils = new IosUtilities(steps)
             def staticAnalysis = new StaticAnalysisUtilities(steps)
             def reactNativeUtils = new ReactNativeUtilities(steps)
-            def buildWorkspace = utils.getBuildWorkspace(config.isReactNative, "ios", env.WORKSPACE)
+            def buildWorkspace = utils.getBuildWorkspace(config.isReactNative, "ios", env.WORKSPACE, config.rootBuildScript)
             def statusThresholdsPropertiesFile = staticAnalysis.getstatusThresholdsPropertiesFilePath(config.statusThresholdsPropertiesFile)
 
             stage("${utils.getStageSuffix(config.stageSuffix)}Static analysis") {
@@ -37,6 +37,8 @@ def call(body) {
                 unstash "workspace"
                 reactNativeUtils.unstashNpmCache()
                 dir(buildWorkspace) {
+                    iosUtils.ustashRubyBuildCache()
+                    iosUtils.ustashIosBuildCache()
                     staticAnalysis.checkIfExistsThresholdsPropertiesFile(statusThresholdsPropertiesFile)
                     withCredentials([string(credentialsId: "FASTLANE_PASSWORD", variable: "FASTLANE_PASSWORD"), string(credentialsId: "MATCH_PASSWORD", variable: "MATCH_PASSWORD")]) {
                         wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'VGA']) {
@@ -49,6 +51,9 @@ def call(body) {
                         }
                     }
 
+                    iosUtils.stashIosBuildCache()
+                    iosUtils.stashRubyBuildCache()
+
                     step([$class                 : "WarningsPublisher",
                           canResolveRelativePaths: false,
                           parserConfigurations   : [[parserName: "Clang (LLVM based)", pattern: "**/logs/xcodebuild.log"]],
@@ -59,7 +64,7 @@ def call(body) {
                           failedTotalHigh        : staticAnalysis.getAndroidStatusThresholdsPropValues("clangFailedTotalHigh", statusThresholdsPropertiesFile),
                           failedTotalNormal      : staticAnalysis.getAndroidStatusThresholdsPropValues("clangFailedTotalNormal", statusThresholdsPropertiesFile)
                     ])
-                    
+
                     if (currentBuild.result == "FAILURE") {
                         error "Static analysis failed - exceeded threshold"
                     }
@@ -67,5 +72,4 @@ def call(body) {
             }
         }
     }
-
 }

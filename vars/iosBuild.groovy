@@ -24,13 +24,15 @@ def call(body) {
             def iosUtils = new IosUtilities(steps)
             def utils = new Utilities(steps)
             def reactNativeUtils = new ReactNativeUtilities(steps)
-            def buildWorkspace = utils.getBuildWorkspace(config.isReactNative, "ios", env.WORKSPACE)
+            def buildWorkspace = utils.getBuildWorkspace(config.isReactNative, "ios", env.WORKSPACE, config.rootBuildScript)
 
             stage("${utils.getStageSuffix(config.stageSuffix)} Build") {
                 deleteDir()
                 unstash "workspace"
                 reactNativeUtils.unstashNpmCache()
                 dir(buildWorkspace) {
+                    iosUtils.ustashRubyBuildCache()
+                    iosUtils.ustashIosBuildCache()
                     withCredentials([string(credentialsId: "FASTLANE_PASSWORD", variable: "FASTLANE_PASSWORD"), string(credentialsId: "MATCH_PASSWORD", variable: "MATCH_PASSWORD")]) {
                         wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'VGA']) {
                             sh """#!/bin/zsh
@@ -41,9 +43,11 @@ def call(body) {
                               """
                         }
                     }
-
+                    iosUtils.stashIosBuildCache()
+                    iosUtils.stashRubyBuildCache()
                     archiveArtifacts artifacts: "**/*.ipa", allowEmptyArchive: true
                     archiveArtifacts artifacts: "**/*.app.dSYM.zip", allowEmptyArchive: true
+                    archiveArtifacts artifacts: "**/culprits.txt", allowEmptyArchive: true
                 }
             }
         }
