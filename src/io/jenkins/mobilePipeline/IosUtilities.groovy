@@ -15,18 +15,22 @@ class IosUtilities implements Serializable {
     }
 
     def addZshrcConfigFileToShell() {
+        steps.echo "source ~/.zshrc"
         return "source \$HOME/.zshrc"
     }
 
     def setFastlaneXcodeListTimeout() {
+        steps.echo "FASTLANE_XCODE_LIST_TIMEOUT=30"
         return "FASTLANE_XCODE_LIST_TIMEOUT=30"
     }
 
     def installProjectEnvironmentRequirements() {
+        steps.echo "bundle install --path vendor/bundle"
         return "bundle install --path vendor/bundle"
     }
 
     def runFastlane(fastlanePassword, fastlaneLane) {
+        steps.echo "bundle exec env FASTLANE_PASSWORD=${fastlanePassword} fastlane ios ${fastlaneLane}"
         return "bundle exec env FASTLANE_PASSWORD=${fastlanePassword} fastlane ios ${fastlaneLane}"
     }
 
