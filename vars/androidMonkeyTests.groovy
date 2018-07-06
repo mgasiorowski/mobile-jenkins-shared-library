@@ -78,6 +78,8 @@ def call(body) {
                     if (monkeyRunStdout.toLowerCase().contains("Monkey aborted due to error".toLowerCase())) {
                         steps.echo monkeyRunStdout
                         currentBuild.result = 'UNSTABLE'
+                    } else if (monkeyRunStdout.toLowerCase().contains("No activities found to run, monkey aborted.".toLowerCase())) {
+                        steps.error("No activities found to run, monkey aborted.")
                     }
                 } catch (exception) {
                     utils.handleException(exception)
