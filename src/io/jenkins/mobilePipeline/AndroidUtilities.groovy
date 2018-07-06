@@ -27,21 +27,22 @@ class AndroidUtilities implements Serializable {
     }
 
     def runAndroidEmulator(emulatorName, logcatFileName) {
-        steps.sh(script: """#!/bin/bash -xe
+        def emulatorRunStdout = steps.sh(script: """#!/bin/bash -xe
                     #Start the emulator
                     ${androidHome}/emulator/emulator -avd ${emulatorName} -no-snapshot-load -no-snapshot-save -wipe-data -gpu on &
                     EMULATOR_PID=\$!
-                 """)
+                 """, returnStdout: true).trim()
+        steps.echo emulatorRunStdout
         for(int i = 0; i < 30; i++) {
             if (!emulatorPidFinder()) {
-                steps.error "Emulator don't run, check logs."
+                steps.error "Emulator didn't start, check logs."
             }
         }
         steps.sh """#!/bin/bash -xe
                     # Wait for Android to finish booting
                     bootanim=""
                     failcounter=0
-                    timeout_in_sec=360
+                    timeout_in_sec=180
 
                     until [[ "\$bootanim" =~ "stopped" ]]; do
                       bootanim=`${androidHome}/platform-tools/adb -e shell getprop init.svc.bootanim 2>&1 &`
