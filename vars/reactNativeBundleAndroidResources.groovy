@@ -18,9 +18,7 @@ def call(body) {
     body.delegate = config
     body()
 
-    def utils = new Utilities(steps)
     def reactNativeUtils = new ReactNativeUtilities(steps)
-    def filesToStash = utils.getFilesToStash(config.filesToStash)
 
     timeout(60) {
         node("${config.nodeLabel}") {

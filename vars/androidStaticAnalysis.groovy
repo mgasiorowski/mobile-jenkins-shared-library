@@ -6,12 +6,17 @@
  * Static analysis for android
  *
  * nodeLabel - label where static analysis will be run
+ * rootBuildScript - optional argument to set root build script
+ * isReactNative - optional parameter to mark build as react native project
  * gradleTasksDebug - gradle tasks to build binary for debug
  * gradleTasksRelease - gradle tasks to build binary for release
  * androidLintResultsFile - optional android lint result file path
  * pmdResultsFile - optional pmd result file path
  * findBugsResultFile - optional findbugs result file path
  * filesToArchieve - optional file to archieve, for ex. report from detekt
+ * useGradleCache - optional argument to turn on/off gradle cache, default true
+ * useBuildCache - optional argument to turn on/off build cache, default true
+ *
  */
 
 import io.jenkins.mobilePipeline.StaticAnalysisUtilities
@@ -45,9 +50,9 @@ def call(body) {
                 dir(buildWorkspace) {
                     staticAnalysis.checkIfExistsThresholdsPropertiesFile(statusThresholdsPropertiesFile)
                     withEnv(["GRADLE_USER_HOME=${env.WORKSPACE}/.gradle"]) {
-                        androidUtils.unstashGradleCache()
+                        androidUtils.unstashGradleCache(config.useGradleCache)
                         androidUtils.setAndroidBuildCache(env.WORKSPACE)
-                        androidUtils.ustashAndroidBuildCache()
+                        androidUtils.ustashAndroidBuildCache(config.useBuildCache)
                         sh "chmod +x gradlew"
                         sh "./gradlew ${defaultGradleOptions} -PversionCode=${env.BUILD_NUMBER} ${defaultGradleTasks} ${gradleTasks}"
                     }

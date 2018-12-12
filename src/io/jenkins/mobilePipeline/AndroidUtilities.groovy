@@ -124,30 +124,43 @@ class AndroidUtilities implements Serializable {
     }
 
     def stashGradleCache() {
-        steps.stash name: "gradleCache", includes: "**/.gradle/**", excludes: "**/.gradle/**/proguard.txt", useDefaultExcludes: false
+        steps.sh "chmod -R u+w .gradle/"
+        steps.stash name: "gradleCache", includes: "**/.gradle/**", useDefaultExcludes: false
     }
 
-    def unstashGradleCache() {
-        try {
-            steps.unstash "gradleCache"
-        } catch(error) {
-            if(!error.toString().toLowerCase().contains("No such saved stash ‘gradleCache’".toLowerCase())) {
-                throw error
+    def unstashGradleCache(useGradleCache=true) {
+        if (!useGradleCache || useGradleCache.toBoolean()) {
+            try {
+                steps.echo "Stage with gradle cache"
+                steps.unstash "gradleCache"
+            } catch (error) {
+                if (!error.toString().toLowerCase().contains("No such saved stash ‘gradleCache’".toLowerCase())) {
+                    throw error
+                }
             }
+        } else {
+            steps.echo "Stage without gradle cache"
         }
+
     }
 
     def stashAndroidBuildCache() {
+        steps.sh "chmod -R u+w *"
         steps.stash name: "androidBuildCache", includes: "**/build/**", useDefaultExcludes: false
     }
 
-    def ustashAndroidBuildCache() {
-        try {
-            steps.unstash "androidBuildCache"
-        } catch(error) {
-            if(!error.toString().toLowerCase().contains("No such saved stash ‘androidBuildCache’".toLowerCase())) {
-                throw error
+    def ustashAndroidBuildCache(useBuildCache=true) {
+        if (!useBuildCache || useBuildCache.toBoolean()) {
+            try {
+                steps.echo "Stage with build cache"
+                steps.unstash "androidBuildCache"
+            } catch (error) {
+                if (!error.toString().toLowerCase().contains("No such saved stash ‘androidBuildCache’".toLowerCase())) {
+                    throw error
+                }
             }
+        } else {
+            steps.echo "Stage without build cache"
         }
     }
 
@@ -159,7 +172,7 @@ class AndroidUtilities implements Serializable {
         def gradleProfileHtmlReportFileExtension = gradleProfileHtmlReportFilename[gradleProfileHtmlReportFilename.lastIndexOf('.')..-1]
         def gradleProfileHtmlReportFilePath = gradleProfileHtmlReportFile[0].path
         def gradleProfileHtmlReportPath = gradleProfileHtmlReportFilePath.take(gradleProfileHtmlReportFilePath.lastIndexOf("/"))
-        steps.sh "mv ${gradleProfileHtmlReportFilePath} ${gradleProfileHtmlReportPath}/${gradleProfileHtmlReportFilenameWithoutExtension}-${gradleProfileFilenameSuffix}${gradleProfileHtmlReportFileExtension}"
+        steps.sh "mv \"${gradleProfileHtmlReportFilePath}\" \"${gradleProfileHtmlReportPath}/${gradleProfileHtmlReportFilenameWithoutExtension}-${gradleProfileFilenameSuffix}${gradleProfileHtmlReportFileExtension}\""
         steps.archiveArtifacts "**/reports/profile/**"
     }
 
@@ -171,4 +184,3 @@ class AndroidUtilities implements Serializable {
         }
     }
 }
-

@@ -10,7 +10,11 @@
  * gradleTasksRelease - gradle tasks to build binary for release
  * buildSuffixName - optional suffix for build
  * isReactNative - optional parameter to mark build as react native project
+ * rootBuildScript - optional argument to set root build script
  * stageSuffix - optional suffix for stage name
+ * stashApk - optional apk files to stash, to use them later, (Ant-style include patterns - https://ant.apache.org/manual/dirtasks.html#patterns)
+ * useGradleCache - optional argument to turn on/off gradle cache, default true
+ * useBuildCache - optional argument to turn on/off build cache, default true
  *
  */
 
@@ -41,9 +45,9 @@ def call(body) {
                 reactNativeUtils.unstashNpmCache()
                 dir(buildWorkspace) {
                     withEnv(["GRADLE_USER_HOME=${env.WORKSPACE}/.gradle"]) {
-                        androidUtils.unstashGradleCache()
+                        androidUtils.unstashGradleCache(config.useGradleCache)
                         androidUtils.setAndroidBuildCache(env.WORKSPACE)
-                        androidUtils.ustashAndroidBuildCache()
+                        androidUtils.ustashAndroidBuildCache(config.useBuildCache)
                         def branch = utils.getBranchName(scm, env.BRANCH_SELECTOR)
                         sh "chmod +x gradlew"
                         if (config.buildSuffixName) {
@@ -71,6 +75,7 @@ def call(body) {
 
                 androidUtils.stashGradleCache()
                 androidUtils.stashAndroidBuildCache()
+                stash name: "apkFiles", includes: androidUtils.getApkWildcard(config.stashApk)
                 androidUtils.archieveGradleProfileReport("beta-upload")
                 archiveArtifacts "**/*.apk"
             }

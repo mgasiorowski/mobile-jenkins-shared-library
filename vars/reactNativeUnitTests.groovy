@@ -5,6 +5,7 @@
  *
  * nodeLabel - label where install dependencies
  * unitTestsCommand - command to run unit tests
+ *
  */
 
 import io.jenkins.mobilePipeline.ReactNativeUtilities

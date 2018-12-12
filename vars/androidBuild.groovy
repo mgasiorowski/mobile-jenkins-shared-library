@@ -11,6 +11,9 @@
  * gradleTasksDebug - gradle tasks to build binary for debug
  * gradleTasksRelease - gradle tasks to build binary for release
  * stashApk - optional apk files to stash, to use them later, (Ant-style include patterns - https://ant.apache.org/manual/dirtasks.html#patterns)
+ * useGradleCache - optional argument to turn on/off gradle cache, default true
+ * useBuildCache - optional argument to turn on/off build cache, default true
+ *
  */
 
 import io.jenkins.mobilePipeline.AndroidUtilities
@@ -41,9 +44,9 @@ def call(body) {
                 reactNativeUtils.unstashNpmCache()
                 dir(buildWorkspace) {
                     withEnv(["GRADLE_USER_HOME=${env.WORKSPACE}/.gradle"]) {
-                        androidUtils.unstashGradleCache()
+                        androidUtils.unstashGradleCache(config.useGradleCache)
                         androidUtils.setAndroidBuildCache(env.WORKSPACE)
-                        androidUtils.ustashAndroidBuildCache()
+                        androidUtils.ustashAndroidBuildCache(config.useBuildCache)
                         sh "chmod +x gradlew"
                         sh """#!/bin/bash -xe 
                           ./gradlew ${defaultGradleOptions} -PversionCode=${env.BUILD_NUMBER} ${defaultGradleTasks} ${gradleTasks}

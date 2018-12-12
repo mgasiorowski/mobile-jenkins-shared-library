@@ -39,11 +39,17 @@ class Utilities implements Serializable {
         }
     }
 
-    def getBuildWorkspace(isReactNative=false, platform=null, workspace){
-        if (isReactNative && isReactNative.toBoolean() && platform == "android") {
-            return "android"
-        } else if (isReactNative && isReactNative.toBoolean() && platform == "ios") {
-            return "ios"
+    def getBuildWorkspace(isReactNative=false, platform=null, workspace, rootBuildScript){
+        if (isReactNative && isReactNative.toBoolean() && platform == "android" && !rootBuildScript) {
+            return "${workspace}/android"
+        } else if (isReactNative && isReactNative.toBoolean() && platform == "ios" && !rootBuildScript) {
+            return "${workspace}/ios"
+        } else if (isReactNative && isReactNative.toBoolean() && platform == "android" && rootBuildScript) {
+            return "${workspace}/${rootBuildScript}/android"
+        } else if (isReactNative && isReactNative.toBoolean() && platform == "ios" && rootBuildScript) {
+            return "${workspace}/${rootBuildScript}/ios"
+        } else if (rootBuildScript) {
+            return "${workspace}/${rootBuildScript}"
         } else {
             return workspace
         }

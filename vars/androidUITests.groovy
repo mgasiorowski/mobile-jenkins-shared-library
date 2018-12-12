@@ -6,12 +6,15 @@
  * Run android UI tests
  *
  * nodeLabel - label where UI tests will be run
+ * rootBuildScript - optional argument to set root build script
  * junitTestReportFile - optional file name with unit tests reports
  * gradleTasksDebug - gradle tasks to build binary for debug
  * gradleTasksRelease - gradle tasks to build binary for release
  * useWiremock - optional argument to use wiremock (default false)
  * wiremockVersion - optional argument to set wiremock version to use (default is used version on nodes)
  * wiremockPort - optional argument to set wiremock port to use (default 8080)
+ * useGradleCache - optional argument to turn on/off gradle cache, default true
+ * userBuildCache - optional argument to turn on/off build cache, default true
  *
  */
 
@@ -48,9 +51,9 @@ def call(body) {
                 try {
                     dir(buildWorkspace) {
                         withEnv(["GRADLE_USER_HOME=${env.WORKSPACE}/.gradle"]) {
-                            androidUtils.unstashGradleCache()
+                            androidUtils.unstashGradleCache(config.useGradleCache)
                             androidUtils.setAndroidBuildCache(env.WORKSPACE)
-                            androidUtils.ustashAndroidBuildCache()
+                            androidUtils.ustashAndroidBuildCache(config.useBuildCache)
                             sh "chmod +x gradlew"
                             sh """#!/bin/bash -xe
                               ./gradlew ${defaultGradleOptions} -PversionCode=${env.BUILD_NUMBER} ${defaultGradleTasks} ${gradleTasks}

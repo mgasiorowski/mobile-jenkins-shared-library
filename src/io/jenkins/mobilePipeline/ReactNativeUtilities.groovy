@@ -23,6 +23,7 @@ class ReactNativeUtilities implements Serializable {
     }
 
     def stashNpmCache() {
+        steps.sh "chmod -R u+w node_modules"
         steps.stash name: "npmCache", includes: "**/node_modules/**", useDefaultExcludes: false
     }
 

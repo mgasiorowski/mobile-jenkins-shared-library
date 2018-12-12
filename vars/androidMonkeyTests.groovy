@@ -15,6 +15,8 @@
  *             it will generate the same sequence of events.
  * throttleValue - Inserts a fixed delay between events. You can use this option to slow down the Monkey.
  *             If not specified, there is no delay and the events are generated as rapidly as possible.
+ * monkeyCommandOptions - optional argument to set additional monkey test options (
+ *             https://developer.android.com/studio/test/monkey#command-options-reference)
  * emulatorName - emulator name
  * useWiremock - optional argument to use wiremock (default false)
  * wiremockVersion - optional argument to set wiremock version to use (default is used version on nodes)
@@ -54,6 +56,12 @@ def call(body) {
         eventCount = 1000
     }
 
+    if (config.monkeyCommandOptions) {
+        monkeyCommandOptions = config.monkeyCommandOptions
+    } else {
+        monkeyCommandOptions = ""
+    }
+
     def utils = new Utilities(steps)
     def androidUtils = new AndroidUtilities(steps)
     def apkName = androidUtils.getApkType(env.BUILD_TYPE, config.apkNameRelease, config.apkNameDebug)
@@ -72,7 +80,7 @@ def call(body) {
                 try {
                     def monkeyRunStdout = steps.sh(script:"""#!/bin/bash -xe
                         \$ANDROID_HOME/platform-tools/adb shell monkey -v -v -s ${seedValue} --throttle ${config.throttleValue} \
-                         -p ${config.packageName} --kill-process-after-error --pct-syskeys 0  ${eventCount} 2>&1 | tee monkey.txt
+                         -p ${config.packageName} --kill-process-after-error --pct-syskeys 0 ${monkeyCommandOptions} ${eventCount} 2>&1 | tee monkey.txt
                      """, returnStdout: true).trim()
                     steps.echo(monkeyRunStdout)
                     if (monkeyRunStdout.toLowerCase().contains("Monkey aborted due to error".toLowerCase())) {
@@ -80,6 +88,8 @@ def call(body) {
                         currentBuild.result = 'UNSTABLE'
                     } else if (monkeyRunStdout.toLowerCase().contains("No activities found to run, monkey aborted.".toLowerCase())) {
                         steps.error("No activities found to run, monkey aborted.")
+                    } else if (!monkeyRunStdout.toLowerCase().contains("Monkey finished".toLowerCase())) {
+                        steps.error("Monkey command error, check logs.")
                     }
                 } catch (exception) {
                     utils.handleException(exception)

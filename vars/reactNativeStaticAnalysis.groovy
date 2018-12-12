@@ -5,6 +5,7 @@
  *
  * nodeLabel - label where install dependencies
  * staticAnalysisCommand - command to run static analysis
+ *
  */
 
 import io.jenkins.mobilePipeline.ReactNativeUtilities

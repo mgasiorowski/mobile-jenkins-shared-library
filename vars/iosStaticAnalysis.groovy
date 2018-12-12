@@ -6,8 +6,11 @@
  * Static analysis for ios
  *
  * nodeLabel - label where static analysis will be run
+ * rootBuildScript - optional argument to set root build script
  * fastlaneLane - fastlane lane to execute
  * statusThresholdsPropertiesFile - path to status threashold properties file
+ * useBuildCache - optional argument to turn on/off build cache, default true
+ * useRubyCache - optional argument to turn on/off ruby build cache, default true
  *
  */
 
@@ -37,14 +40,14 @@ def call(body) {
                 unstash "workspace"
                 reactNativeUtils.unstashNpmCache()
                 dir(buildWorkspace) {
-                    iosUtils.ustashRubyBuildCache()
-                    iosUtils.ustashIosBuildCache()
+                    iosUtils.ustashRubyBuildCache(config.useRubyCache)
+                    iosUtils.ustashIosBuildCache(config.useBuildCache)
                     staticAnalysis.checkIfExistsThresholdsPropertiesFile(statusThresholdsPropertiesFile)
                     withCredentials([string(credentialsId: "FASTLANE_PASSWORD", variable: "FASTLANE_PASSWORD"), string(credentialsId: "MATCH_PASSWORD", variable: "MATCH_PASSWORD")]) {
                         wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'VGA']) {
                             sh """#!/bin/zsh
                                  ${iosUtils.addZshrcConfigFileToShell()}
-                                 ${iosUtils.setFastlaneXcodeListTimeout()}
+                                 ${iosUtils.setFastlaneXcodeListTimout()}
                                  ${iosUtils.installProjectEnvironmentRequirements()}
                                  ${iosUtils.runFastlane(env.FASTLANE_PASSWORD, config.fastlaneLane)}
                               """
@@ -64,6 +67,8 @@ def call(body) {
                           failedTotalHigh        : staticAnalysis.getAndroidStatusThresholdsPropValues("clangFailedTotalHigh", statusThresholdsPropertiesFile),
                           failedTotalNormal      : staticAnalysis.getAndroidStatusThresholdsPropValues("clangFailedTotalNormal", statusThresholdsPropertiesFile)
                     ])
+
+                    iosUtils.addXcodebuildLogToArtifacts(env.STAGE_NAME)
 
                     if (currentBuild.result == "FAILURE") {
                         error "Static analysis failed - exceeded threshold"
