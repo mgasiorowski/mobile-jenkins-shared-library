@@ -72,7 +72,7 @@ androidBetaUpload {
 }
  
 iosBuild {
-    nodeLabel = 'mac_mini_wp'
+    nodeLabel = 'mac_mini'
     stageSuffix = 'iOS'
     isReactNative = 'true'
     fastlaneLane = 'adhoc'
